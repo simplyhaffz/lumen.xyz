@@ -1,203 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Music Player</title>
-  <style>
-    @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600&display=swap");
+    <!-- Meta and Title -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond The Dreams</title>
 
-    :root {
-      --primary-clr: rgba(228, 228, 229, 1);
-    }
+    <!-- Stylesheets and Favicon -->
+    <link rel="stylesheet" href="main.css?3">
+    <link rel="icon" href="favicon.png">
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Nunito", sans-serif;
-    }
+    <!-- Preloaded Scripts -->
+    <link rel="preload" href="js/polyfills.js" as="script">
+    <link rel="preload" href="js/script.compiled.js" as="script">
 
-    body {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      width: 100%;
-      background: url(https://github.com/ecemgo/mini-samples-great-tricks/assets/13468728/8727c9b1-be21-4932-a221-4257b59a74dd);
-      background-repeat: no-repeat;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      animation: slidein 120s forwards infinite alternate;
-    }
+    <!-- Inline Style for Flickering -->
 
-    @keyframes slidein {
-      0%,
-      100% {
-        background-position: 20% 0%;
-        background-size: 3400px;
-      }
-      50% {
-        background-position: 100% 0%;
-        background-size: 2400px;
-      }
+<style>
+    @keyframes flickering {
+        0%, 100% { opacity: 0.63; }
+        10% { opacity: 0.95; }
+        20% { opacity: 0.46; }
+        30% { opacity: 0.78; }
+        40% { opacity: 0.94; }
+        50% { opacity: 1.00; }
+        60% { opacity: 0.85; }
+        70% { opacity: 1.17; }
+        80% { opacity: 0.73; }
+        90% { opacity: 0.99; }
     }
-
-    .album-cover {
-      width: 90%;
-    }
-
-    .swiper {
-      width: 100%;
-      padding: 40px 0 100px;
-    }
-
-    .swiper-slide {
-      position: relative;
-      max-width: 200px;
-      aspect-ratio: 1/1;
-      border-radius: 10px;
-    }
-
-    .swiper-slide img {
-      object-fit: cover;
-      width: 100%;
-      height: 100%;
-      border-radius: inherit;
-      -webkit-box-reflect: below -5px linear-gradient(transparent, transparent, rgba(0, 0, 0, 0.4));
-      pointer-events: none;
-      user-select: none;
-    }
-
-    .swiper-slide-active .overlay {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(28, 22, 37, 0.6);
-      border-radius: inherit;
-      opacity: 0;
-      transition: all 0.4s linear;
-    }
-
-    .swiper-slide:hover .overlay {
-      opacity: 1;
-    }
-
-    .swiper-slide .overlay ion-icon {
-      opacity: 0;
-    }
-
-    .swiper-slide-active:hover .overlay ion-icon {
-      font-size: 4rem;
-      color: #eb0b0b;
-      opacity: 1;
-      cursor: pointer;
-    }
-
-    .music-player {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: var(--primary-clr);
-      width: 380px;
-      padding: 10px 30px;
-      border-radius: 20px;
-    }
-
-    .music-player h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      line-height: 1.6;
-    }
-
-    .music-player p {
-      font-size: 1rem;
-      font-weight: 400;
-      opacity: 0.6;
-    }
-
-    #progress {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 100%;
-      height: 7px;
-      background: rgba(163, 162, 164, 0.4);
-      border-radius: 4px;
-      margin: 32px 0 24px;
-      cursor: pointer;
-    }
-
-    #progress::-webkit-slider-thumb {
-      appearance: none;
-      -webkit-appearance: none;
-      background: rgba(163, 162, 164, 0.9);
-      width: 16px;
-      aspect-ratio: 1/1;
-      border-radius: 50%;
-      outline: 4px solid var(--primary-clr);
-      box-shadow: 0 6px 10px rgba(5, 36, 28, 0.3);
-    }
-
-    .controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .controls button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 50px;
-      aspect-ratio: 1/1;
-      margin: 20px;
-      background: rgba(163, 162, 164, 0.3);
-      color: var(--primary-clr);
-      border-radius: 50%;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      outline: 0;
-      font-size: 1.1rem;
-      box-shadow: 0 10px 20px rgba(5, 36, 28, 0.3);
-      cursor: pointer;
-      transition: all 0.3s linear;
-    }
-
-    .controls button:is(:hover, :focus-visible) {
-      transform: scale(0.96);
-    }
-
-    .controls button:nth-child(2) {
-      transform: scale(1.3);
-    }
-
-    .controls button:nth-child(2):is(:hover, :focus-visible) {
-      transform: scale(1.25);
-    }
-  </style>
-  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+</style>
 </head>
+
 <body>
-  <div class="album-cover">
-    <div class="swiper">
-      <div class="swiper-wrapper">
-        <!-- Swiper slides will be dynamically generated if needed -->
-        <div class="swiper-slide">
-          <img src="https://github.com/ecemgo/mini-samples-great-tricks/assets/13468728/d3ca28bf-e1b7-467e-a00b-c7785be8e397" />
-          <div class="overlay">
-            <a href="https://www.youtube.com/watch?v=aatr_2MstrI" target="_blank">
-              <ion-icon name="logo-youtube"></ion-icon>
-            </a>
-          </div>
-        </div>
-      </div>
+    <!-- Background Image -->
+    <img src="images/bg.png" id="bg" alt="Background Image">
+
+    <!-- Hidden Snow Element -->
+    <div id="snow" hidden></div>
+
+    <!-- Debug Information -->
+    <span id="debug"></span>
+    <span id="fps"></span>
+
+    <!-- Main Container -->
+    <div id="container">
+
+        <!-- Wires and Mewo -->
+        <img src="images/wires.png" id="wires" width="922" height="126" alt="Wires">
+        <img src="images/mewo.png" id="mewo" alt="Mewo">
+
+        <!-- Logo Section -->
+<div id="logo">
+    <img src="images/letters/H.png" class="letter la rain-hitbox" style="margin-right: 5px;" id="logo-d0" alt="H">
+    <img src="images/letters/A.png" class="letter la rain-hitbox" style="margin-right: 10px;" alt="A">
+    <img src="images/letters/F.png" class="letter la rain-hitbox" style="margin-right: -5px;" id="logo-d" alt="F">
+    <img src="images/letters/F.png" class="letter la rain-hitbox" style="margin-right: 10px;" id="logo-d" alt="F">
+    <img src="images/letters/Z.png" class="letter la rain-hitbox" style="margin-left: 2px; margin-bottom: -3px; position: absolute;" id="logo-n" alt="Z">
+</div>
+
+        <!-- Main Table Structure -->
+        <table>
+            <tbody>
+                <tr>
+                    <td id="maintd">
+                        <div id="cursors"></div>
+
+                        <!-- Main Content Box -->
+                        <div class="box rain-hitbox" id="mainbox">
+                            <img src="images/moon.png" class="moon-icon" alt="Moon Icon" style="vertical-align: sub; margin-right: 5px;">
+                            <h2 style="display: inline;">Beyond The Dreams!</h2><br>
+                            <img src="images/Haffz.gif" id="haffzgif" alt="Animated Gif">
+                            <div id="mood-div" title="Last update: 11/7/2024, 4:49:50 PM">
+                                <a href="https://simplyhaffz.github.io/337/MyWorld.html">
+                                    <span id="mood" style="color: #e64f22;">Forever Alive</span>
+                                </a>
+                            </div>
+
+<!-- Website Description -->
+<p style="font-size: 20px;">𝐓𝐡𝐢𝐬 𝐢𝐬 𝐦𝐲 𝐥𝐢𝐭𝐭𝐥𝐞 𝐰𝐞𝐛𝐬𝐢𝐭𝐞 𝐚𝐧𝐝 𝐛𝐥𝐨𝐠. 𝐈𝐭 𝐰𝐚𝐬 𝐜𝐫𝐞𝐚𝐭𝐞𝐝 𝐨𝐧 𝐍𝐨𝐯𝐞𝐦𝐛𝐞𝐫 𝟏𝟗, 𝟐𝟎𝟐𝟒.</p>
+<p style="font-size: 20px;"></p>
+<span style="font-size: 22px;">✭ Some quick facts:<br></span>
+
+<hr>
+<!-- Quick Facts List -->
+<ul style="margin-block-start: 5px;">
+    <li>I'm from <a href="https://en.wikipedia.org/wiki/Turkey" style="color: #ff6600;">Turkiye</a> and currently live here.</li>
+    <li>Studying <u><span style="color: #0099ff;">CSDS</span></span></u> at <a href="https://www.istanbul.edu.tr/" style="color: #009933;">Istanbul University</a>.</li>
+    <li>I love <a style="color: yellow;" href="webdev/index.html">Web Development</a> and enjoy creating innovative projects.</li>
+    <li>A true <a href="mountains.html" style="color: lightgreen;">mountain lover</a>, I find peace in the heights. The <a href="sun.html" style="color: lightred;"> sun </a> and the <a href="#" style="color: orange;"> moon </a> are my friends.</li>
+    <li>I balance being an <span style="color: blue;">indoors</span> and <span style="color: darkgreen;">outdoors</span> person but cherish my <span style="color: purple;">alone time</span>.</li>
+    <li><span style="color: #ff6600;">Cats</span> and <span style="color: #9966ff;">wolves</span> are my favorite animals, and they hold a special place in my heart.</li>
+    <li>My favorite season is <span style="color: lightblue;">Summer.</span>But some rainy winter mornings hite different.</li>
+    <li>You'll find me <span style="color: #cc0066;">drawing</span>, hitting the <span style="color: #0066cc;">gym</span>, or simply enjoying life in my free time.</li>
+    <li>I prefer <span style="color: orange;">creative logic</span> when approaching problems.</li>
+    <li>Motivated by the idea of <u><span style="color: #ff3333;">“One life”</span></u>, I strive to make the most of each day.</li>
+    <li><span style="color: #990000;">Turkish cuisine</span> is my favorite, and I love savoring its diverse flavors.</li>
+    <li>A <span style="color: #3333cc;">night owl</span> by nature, I thrive in the quiet hours of the night.</li>
+    <li>I enjoy teamwork with <span style="color: #ff6600;">friends</span>, though I prefer working alone when with <span style="color: #996600;">strangers</span>.</li>
+    <li><span style="color: #339966;">Tennis</span> is my favorite sport, and I enjoy both watching and playing it.</li>
+    <li><span style="color: #ff9933;">Traveling</span> excites me, and there are many places on my bucket list.</li>
+    <li>People say it’s hard to offend me, but if you manage it, beware!</li>
+    <li>I live by the quote: <i>“If we don't vibe; We dont ride.”</i></li>
+</ul>
+
+
+
+                            <!-- Adblock Notice -->
+                            <div class="notice" id="blocknotice" hidden>
+                                <span id="close-notice">&times;</span>
+                                <h4 style="margin-bottom: 5px; margin-top: -4px;">Adblock detected</h4>
+                                <span>
+                                    If the website looks buggy, please disable your adblocker! This is my personal site and has <b>no</b> real ads, but it's script-heavy and things can break with it on.
+                                </span>
+                            </div>
+                        </div>
+<!-- Turkiye banner -->
+                        <div id="projects-banner">
+                            <a href="#" target="_blank">
+                                <img src="images/Turkiye.png" width="650" height="77" loading="lazy">
+                            </a>
+                        </div>
+                        
+                        <!-- Tribute Marquee -->
+                        <div style="margin-top: 10px;">
+                            <marquee onmouseover="this.stop();" onmouseout="this.start();">
+                                <span style="color: #fcba03;">
+                                    <b>“My people are going to learn the principles of democracy the dictates of truth and the teachings of science.
+                                        Superstition must go. Let them worship as they will, every man can follow his own conscience provided it does not 
+                                        interfere with sane reason or bid him act against the liberty of his fellow men.”</b>
+                                    <strong> </span>
+                                        <span style="color: #ff0000;">― Mustafa Kemal Atatürk </span>
+                                
+                            </marquee>
+                        </div>
+
+                        <!-- Blog Section -->
+                        <div class="box" style="margin-top: 10px;">
+                            <img src="images/moon.png" class="moon-icon" alt="Moon Icon" style="vertical-align: sub; margin-right: 5px;">
+                            <h2 style="display: inline;">Blog</h2><br><br> 
+                            <hr style="border-color: gray;">
+                            <span class="blog-arrow">-</span><b><a href="#">Coming Soon</a></b>
+                        </div>
+
+                        <!-- Projects Section -->
+                        <div class="box rain-hitbox" style="margin-top: 10px;">
+                            <img src="images/moon.png" class="moon-icon" alt="Moon Icon" style="vertical-align: sub; margin-right: 5px;">
+                            <h2 style="display: inline;">Projects</h2>
+                            <br><br>
+                            <hr style="border-color: gray;">
+                            <a target="_blank" href="#"><h3>☾ :D</h3></a>
+                            Lazy to complete. Coming soon.
+                        </div>
+
+                        <!-- System Status -->
+                        <div class="box terminal" style="margin-top: 10px;">
+                            <span>Systems status: <span id="system-status" class="status-ok">OK</span><br><br>
+                            <table>
+                                <tbody>
+                                    <tr id="statuses">
+                                        <td>
+                                            <span>[<span class="status-ok"> OK </span>] Studies</span><br>
+                                            <span>[<span class="status-ok"> OK </span>] Friendship</span><br>
+                                            <span>[<span class="status-fail">Fail</span>] Mental Health</span><br>
+                                            <span>[<span class="status-ok"> OK </span>] Gym Streak</span><br>
+                                        </td>
+                                        <td>
+                                            <span>[<span class="status-ok"> OK </span>] Website</span><br>
+                                            <span>[<span class="status-fail">Fail</span>] Dreams</span><br>
+                                            <span>[<span class="status-ok"> OK </span>] Projects</span><br>
+                                            <span>[<span class="status-ok"> OK </span>] Notes</span><br>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+        
+                    <!-- MENU -->
+<td id="menutd" style="max-width: 225px">
+    <div class="box rain-hitbox" id="linksdiv">
+        <!-- Links with star and icons -->
+        <img style="vertical-align: top; margin-right: 5px; position:relative;cursor:pointer" src="images/warpstar.png" id="kirby">
+        <h2 style="display:inline">Stars</h2>
+        <img src="images/electricity_on.png" id="switch">
+        <br><br>
+        <a class="navlink" href="index.html" id="home-link">✩ Home</a><br>
+        <a class="navlink" href="#" id="about-link">✩ My Beliefs </a><br>
+        <a class="navlink" href="https://simplyhaffz.github.io/337/Gallery/">✩ Gallery (PC View Only)</a><br>
+        <a class="navlink" href="https://www.instagram.com/_simplyhaffz337/">✩ Instagram</a><span id="new-photos"></span><br>
+        <a class="navlink" href="#">✩ Hall of memories</a><br>
+        <a class="navlink" target="_blank" href="https://simplyhaffz.github.io/337/Forest/">✩ The Forest</a><br>
+        <b><a class="navlink" target="_blank" href="#">✩ Discord Server</a></b> <i style="color:gray"> join!!</i><br>
+        <a class="navlink" href="https://simplyhaffz.github.io/337/others/quote.html">✩ Quotes<span style="color:red;vertical-align: super;font-size: 12px;margin-left:3px">new!</span></a><br>
+        <a class="navlink" target="_blank" href="#">✩ Notes</a><br>
+        <a class="navlink" target="_blank" href="#">✩ TO BE WRITTEN</a><br>
+        <a class="navlink" target="_blank" href="#">✩ TO BE WRITTEN</a><br>
+        <a class="navlink" target="_blank" href="#">✩ TO BE WRITTEN</a><br>
+        <a class="navlink" href="#">✩ TO BE WRITTEN </a><br>
+        <a class="navlink" href="#">✩ TO BE WRITTEN </a><br>
+        <a class="navlink" href="#">✩ TO BE WRITTEN <!-- <img src="images/mail.png" style="vertical-align: bottom;margin-left: 3px;"> --> </a><br>
     </div>
-  </div>
+
+    <!-- Quote section -->
+     <div class="box" style="margin-top:5px">
+          <div id="pre-tweet">
+               <b>✧ Favourite Quote</b>:</b><br>
+                     <span id="tweet">
+                          <a target="_blank" href="#"><img src="images/Haffz.gif" width="32" height="32" id="tweet-avatar"></a>
+                          <a style="text-decoration:none" target="_blank" href="#"><b id="tweet-author">The Queen</b> <span style="color:white">•</span> <span style="color:#bfbfbf">☪</span></a>
+                      <br>
+                <span id="tweet-text">"Be who you are and say what you feel, because those who mind don't matter, 
+                    and those who matter don't mind."
+                </span>
+            </span>
+         </div>
+     </div>
+                        <!-- Status Section -->
+                        <div class="box centerbox" style="margin-top: 10px;">
+                            <span>I'm</span>
+                            <h2 id="status" style="color: red; text-shadow: 0px 0px 10px red;">notOk!</h2>
+                            </div>
+                            <div class="box" style="margin-top: 10px; margin-bottom: 10px;">
+            <!-- Music section -->
+            <div class="blob" id="pulser"></div>
+            <b id="currentlylistening">Loved song:</b> <br><br>
+            <a href="https://www.youtube.com/watch?v=zaIsVnmwdqg" id="songlink" target="_blank">
+                <div id="musicbox">
+                    <img src="https://i.scdn.co/image/ab67616d00001e0282c80d6ec5b001d9ae49564d" width="50" height="50" id="albumcover">
+                    <marquee onmouseover="this.stop();" onmouseout="this.start();" scrollamount="3" id="songname">Happy Now (Kygo, Sandro Cavazza )</marquee>
+                </div>
+            </a>
+        </div>
+
+                            <div id="projects-banner">
+                            <a href="#" target="_blank">
+                                <img src="images/G.S.K.png" width="210" height="255" loading="lazy">
+                            </a>
+                        </div>
+    <br><br> 
+
+</td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <footer>
+
+            <span id="copyright">(c) 2019-2024 Haffz. All Rights Reserved.</span><br>
+        </footer>
+            <br><br>
+
+
+        <!-- Protection -->
+        <script>
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // Disable image dragging
+        document.addEventListener('dragstart', function(event) {
+            if (event.target.tagName === 'IMG') {
+                event.preventDefault();
+            }
+        });
+
+        // Detect and block developer tools
+        let devtoolsOpen = false;
+        const element = new Image();
+        Object.defineProperty(element, 'id', {
+            get() {
+                devtoolsOpen = true;
+                event.preventDefault();
+            },
+        });
+        console.log(element.id);
+
+        setInterval(function() {
+            if (devtoolsOpen) {
+                devtoolsOpen = false;
+            }
+        }, 1000);
+
+        // Prevent text selection
+        document.addEventListener('selectstart', function(event) {
+            event.preventDefault();
+        });
+
+        // Prevent printing
+        window.onbeforeprint = function() {
+            alert('Printing is disabled on this page.');
+            return false; // Prevent printing
+        };
+    </script>
+        
+    <!-- JavaScript Files -->
+    <script src="js/polyfills.js" defer></script>
+    <script src="js/script.compiled.js" defer></script>
+    <script src="js/rain1679.js?6"></script>
 </body>
+
 </html>
